@@ -11,6 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import planit.sinha.ankur.com.planit.AppExecutors;
+import planit.sinha.ankur.com.planit.data.local.db.CategoryDao;
+import planit.sinha.ankur.com.planit.data.model.db.Category;
 import planit.sinha.ankur.com.planit.data.model.db.Task;
 
 /**
@@ -18,11 +20,12 @@ import planit.sinha.ankur.com.planit.data.model.db.Task;
  */
 
 
-@Database(entities = {Task.class}, version = 1)
+@Database(entities = {Task.class,Category.class}, version = 1)
 //@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase sInstance;
+    public abstract CategoryDao categoryDao();
 
     @VisibleForTesting
     public static final String DATABASE_NAME = "planit-db";
