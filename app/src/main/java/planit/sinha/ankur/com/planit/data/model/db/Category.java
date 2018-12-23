@@ -7,7 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
  * Created by ankur sinha on 15-12-2018.
  */
 
-@Entity(tableName = "Category")
+@Entity(tableName = "category")
 public class Category {
     @PrimaryKey(autoGenerate = true)
     private int id;

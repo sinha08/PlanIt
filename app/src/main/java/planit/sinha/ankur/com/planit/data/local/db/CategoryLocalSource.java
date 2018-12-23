@@ -6,13 +6,14 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import planit.sinha.ankur.com.planit.AppExecutors;
+import planit.sinha.ankur.com.planit.data.CategoryDataSource;
 import planit.sinha.ankur.com.planit.data.model.db.Category;
 
 /**
  * Created by ankur sinha on 15-12-2018.
  */
 
-public class CategoryLocalSource {
+public class CategoryLocalSource implements CategoryDataSource{
     private static volatile CategoryLocalSource INSTANCE;
 
     private CategoryDao mCategoryDao;
@@ -38,15 +39,28 @@ public class CategoryLocalSource {
         return INSTANCE;
     }
 
-    public void getCategories() {
+    @Override
+    public void saveCategories(final Category category) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final Observable<List<Category>> categories = mCategoryDao.loadAll();
+                mCategoryDao.insert(category);
+                //TODO how to check if it's inserted
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
+    }
+
+    @Override
+    public void getCategories(@NonNull LoadCategoriesCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                final List<Category> categories = mCategoryDao.loadAll();
                 mAppExecutors.mainThread().execute(new Runnable() {
                     @Override
                     public void run() {
-
+                        callback.onCategoriessLoaded(categories);
                     }
                 });
             }

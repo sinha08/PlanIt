@@ -27,21 +27,22 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase sInstance;
     public abstract CategoryDao categoryDao();
 
+    private static final Object sLock = new Object();
+
     @VisibleForTesting
     public static final String DATABASE_NAME = "planit-db";
 
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
 
-    public static AppDatabase getInstance(final Context context, final AppExecutors executors) {
-        if (sInstance == null) {
-            synchronized (AppDatabase.class) {
-                if (sInstance == null) {
-                    sInstance = buildDatabase(context.getApplicationContext(), executors);
-                    sInstance.updateDatabaseCreated(context.getApplicationContext());
-                }
+    public static AppDatabase getInstance(final Context context) {
+        synchronized (sLock) {
+            if (sInstance == null) {
+                sInstance = Room.databaseBuilder(context.getApplicationContext(),
+                        AppDatabase.class, DATABASE_NAME)
+                        .build();
             }
+            return sInstance;
         }
-        return sInstance;
     }
 
     /**
@@ -60,9 +61,9 @@ public abstract class AppDatabase extends RoomDatabase {
                             // Add a delay to simulate a long-running operation
                             addDelay();
                             // Generate the data for pre-population
-                            AppDatabase database = AppDatabase.getInstance(appContext, executors);
+//                            AppDatabase database = AppDatabase.getInstance(appContext, executors);
                             // notify that the database was created and it's ready to be used
-                            database.setDatabaseCreated();
+//                            database.setDatabaseCreated();
                         });
                     }
                 }).build();

@@ -10,7 +10,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import java.util.List;
-import io.reactivex.Observable;
 
 import planit.sinha.ankur.com.planit.data.model.db.Category;
 
@@ -18,20 +17,20 @@ import planit.sinha.ankur.com.planit.data.model.db.Category;
 public interface CategoryDao {
 
     @Delete
-    void delete(Category user);
-
-    @Query("SELECT * FROM users WHERE name LIKE :name LIMIT 1")
-    Observable<Category> findByName(String name);
+    void delete(Category category);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Category user);
+    void insert(Category category);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<Category> users);
+    void insertAll(List<Category> categories);
 
-    @Query("SELECT * FROM users")
-    Observable<List<Category>> loadAll();
+    @Query("SELECT * FROM category")
+    List<Category> loadAll();
 
-    @Query("SELECT * FROM users WHERE id IN (:userIds)")
-    Observable<List<Category>> loadAllByIds(List<Integer> userIds);
+    @Query("SELECT * FROM category WHERE id IN (:categoryIds)")
+    List<Category> loadAllByIds(List<Integer> categoryIds);
+
+    @Query("SELECT * FROM category WHERE id = :id")
+    Category getCategoryById(int id);
 }
