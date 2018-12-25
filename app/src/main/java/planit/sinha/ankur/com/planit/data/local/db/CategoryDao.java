@@ -4,6 +4,7 @@ package planit.sinha.ankur.com.planit.data.local.db;
  * Created by ankur sinha on 15-12-2018.
  */
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -32,5 +33,5 @@ public interface CategoryDao {
     List<Category> loadAllByIds(List<Integer> categoryIds);
 
     @Query("SELECT * FROM category WHERE id = :id")
-    Category getCategoryById(int id);
+    LiveData<Category> getCategoryById(int id);
 }

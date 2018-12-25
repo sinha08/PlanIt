@@ -1,5 +1,6 @@
 package planit.sinha.ankur.com.planit.data;
 
+import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -62,5 +63,10 @@ public class CategoryRepository implements CategoryDataSource {
     @Override
     public void saveCategories(Category category) {
         mLocalSource.saveCategories(category);
+    }
+
+    @Override
+    public LiveData<Category> getCategoryById(int id) {
+        return mLocalSource.getCategoryById(id);
     }
 }

@@ -1,5 +1,6 @@
 package planit.sinha.ankur.com.planit.data;
 
+import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface CategoryDataSource {
     void getCategories(LoadCategoriesCallback callback);
 
     void saveCategories(Category category);
+
+    LiveData<Category> getCategoryById(int id);
 }

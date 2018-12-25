@@ -1,5 +1,6 @@
 package planit.sinha.ankur.com.planit.data.local.db;
 
+import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import java.util.List;
@@ -69,19 +70,8 @@ public class CategoryLocalSource implements CategoryDataSource{
         mAppExecutors.diskIO().execute(runnable);
     }
 
-    public void getCategory(@NonNull final String categoryId) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mAppExecutors.mainThread().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                    }
-                });
-            }
-        };
-
-        mAppExecutors.diskIO().execute(runnable);
+    public LiveData<Category> getCategoryById(@NonNull final int categoryId) {
+        return mCategoryDao.getCategoryById(categoryId);
     }
 
     public void refreshCategories() {
