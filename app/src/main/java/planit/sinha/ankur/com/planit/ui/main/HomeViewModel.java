@@ -3,6 +3,7 @@ package planit.sinha.ankur.com.planit.ui.main;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
@@ -20,20 +21,39 @@ import planit.sinha.ankur.com.planit.data.model.db.Category;
 public class HomeViewModel extends AndroidViewModel {
 
     private final LiveData<Category> mObservableCategory;
+    private final MutableLiveData<List<Category>> mObservableList;
     private CategoryDataSource mRepository;
 
     public HomeViewModel(@NonNull Application application, CategoryDataSource repository) {
         super(application);
         mRepository = repository;
-        mObservableCategory = repository.getCategoryById(1234);
+        mObservableList = new MutableLiveData<>();
+        mObservableCategory = repository.getCategoryById(1);
     }
 
-    public void saveCategory() {
-        mRepository.saveCategories(new Category(1234, "Ideas"));
+    public void saveCategory(int id, String name) {
+        mRepository.saveCategories(new Category(id, name));
+    }
+
+    public void getListOfCategories() {
+        mRepository.getCategories(new CategoryDataSource.LoadCategoriesCallback() {
+            @Override
+            public void onCategoriessLoaded(List<Category> categories) {
+                mObservableList.setValue(categories);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
     }
     /**
      * Expose the LiveData Comments query so the UI can observe it.
      */
+    public MutableLiveData<List<Category>> getObservableList () {
+        return mObservableList;
+    }
 
     public LiveData<Category> getObservableCategory() {
         return mObservableCategory;

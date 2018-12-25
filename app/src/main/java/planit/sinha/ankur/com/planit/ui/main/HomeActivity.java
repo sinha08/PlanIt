@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import planit.sinha.ankur.com.planit.R;
 import planit.sinha.ankur.com.planit.data.model.db.Category;
 
@@ -25,26 +27,31 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView mCategoryName;
+    private TextView mCategoryName1;
+    private HomeViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mCategoryName = findViewById(R.id.category_name);
+        mCategoryName1 = findViewById(R.id.category_name1);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         HomeViewModel.Factory factory = new HomeViewModel.Factory(
                 getApplication());
 
-        final HomeViewModel model = ViewModelProviders.of(this, factory)
+        model = ViewModelProviders.of(this, factory)
                 .get(HomeViewModel.class);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                model.saveCategory();
+                for (int i=0;i<2;i++) {
+                    model.saveCategory(i,i+"_ideas");
+                }
                 Toast.makeText(getApplicationContext(),"added category",Toast.LENGTH_SHORT).show();
             }
         });
@@ -69,6 +76,14 @@ public class HomeActivity extends AppCompatActivity
             public void onChanged(@Nullable Category category) {
                 if (category != null)
                     mCategoryName.setText(category.getText());
+            }
+        });
+
+        model.getObservableList().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable List<Category> categories) {
+                if(categories != null && !categories.isEmpty())
+                    mCategoryName1.setText(categories.get(1).getText());
             }
         });
     }
@@ -99,6 +114,7 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            model.getListOfCategories();
             return true;
         }
 
