@@ -64,7 +64,8 @@ public class CategoryAdapter  extends RecyclerView.Adapter<CategoryAdapter.ViewH
             @Override
             public boolean onLongClick(View view) {
                 holder.selectIcon.setVisibility(View.VISIBLE);
-                mActivity.setFabToDelete(true);
+                Category category = new Category(holder.myTextView.getText().toString());
+                mActivity.setFabToDelete(true, category);
                 return true;
             }
         });

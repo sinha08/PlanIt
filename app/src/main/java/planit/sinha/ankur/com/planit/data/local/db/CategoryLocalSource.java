@@ -89,11 +89,11 @@ public class CategoryLocalSource implements CategoryDataSource{
         mAppExecutors.diskIO().execute(deleteRunnable);
     }
 
-    public void deleteCategory(@NonNull final String categoryId) {
+    public void deleteCategory(@NonNull final Category category) {
         Runnable deleteRunnable = new Runnable() {
             @Override
             public void run() {
-
+                mCategoryDao.delete(category.getText());
             }
         };
 

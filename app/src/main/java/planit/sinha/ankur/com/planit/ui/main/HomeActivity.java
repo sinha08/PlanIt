@@ -2,12 +2,15 @@ package planit.sinha.ankur.com.planit.ui.main;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,14 +51,11 @@ public class HomeActivity extends AppCompatActivity
                 .get(HomeViewModel.class);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        setFabToDelete(false);
+        setFabToDelete(false, null);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                for (int i=0;i<2;i++) {
-//                    model.saveCategory(i,i+"_ideas");
-//                }
-                Toast.makeText(getApplicationContext(),"added category",Toast.LENGTH_SHORT).show();
+                createAddCategoryDialog();
             }
         });
 
@@ -76,7 +77,7 @@ public class HomeActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
     }
 
-    public void setFabToDelete(boolean set) {
+    public void setFabToDelete(boolean set, Category category) {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (set) {
             fab.setImageResource(R.drawable.ic_delete_black);
@@ -84,9 +85,10 @@ public class HomeActivity extends AppCompatActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    model.deleteCategory(category);
                     Toast.makeText(getApplicationContext(),"deleting category",Toast.LENGTH_SHORT).show();
-                    adapter.notifyDataSetChanged();//TODO change it as per delete
-                    setFabToDelete(false);
+                    model.getListOfCategories();
+                    setFabToDelete(false, null);
                 }
             });
         } else {
@@ -95,13 +97,38 @@ public class HomeActivity extends AppCompatActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                for (int i=0;i<2;i++) {
-//                    model.saveCategory(i,i+"_ideas");
-//                }
-                    Toast.makeText(getApplicationContext(),"added category",Toast.LENGTH_SHORT).show();
+                    createAddCategoryDialog();
                 }
             });
         }
+    }
+
+    private void createAddCategoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = getLayoutInflater();
+        final View view = inflater.inflate(R.layout.add_category_dialog, null);
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(view)
+                // Add action buttons
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        EditText text = view.findViewById(R.id.cat_name);
+                        model.saveCategory(text.getText().toString());
+                        model.getListOfCategories();
+                        Toast.makeText(getApplicationContext(),"added category",Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void subscribeToModel(final HomeViewModel model) {

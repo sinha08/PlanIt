@@ -36,4 +36,8 @@ public class Category {
         this.id = id;
         this.text = text;
     }
+
+    public Category(String text) {
+        this.text = text;
+    }
 }

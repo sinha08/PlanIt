@@ -24,5 +24,7 @@ public interface CategoryDataSource {
 
     void saveCategories(Category category);
 
+    void deleteCategory(Category category);
+
     LiveData<Category> getCategoryById(int id);
 }

@@ -31,8 +31,12 @@ public class HomeViewModel extends AndroidViewModel {
         mObservableCategory = repository.getCategoryById(1);
     }
 
-    public void saveCategory(int id, String name) {
-        mRepository.saveCategories(new Category(id, name));
+    public void saveCategory(String name) {
+        mRepository.saveCategories(new Category(name));
+    }
+
+    public void deleteCategory(Category category) {
+        mRepository.deleteCategory(category);
     }
 
     public void getListOfCategories() {

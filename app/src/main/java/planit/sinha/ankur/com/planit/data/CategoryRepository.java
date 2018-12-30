@@ -69,4 +69,9 @@ public class CategoryRepository implements CategoryDataSource {
     public LiveData<Category> getCategoryById(int id) {
         return mLocalSource.getCategoryById(id);
     }
+
+    @Override
+    public void deleteCategory(Category category) {
+        mLocalSource.deleteCategory(category);
+    }
 }

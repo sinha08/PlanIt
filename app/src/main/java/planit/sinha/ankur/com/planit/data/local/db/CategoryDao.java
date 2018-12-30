@@ -20,6 +20,9 @@ public interface CategoryDao {
     @Delete
     void delete(Category category);
 
+    @Query("DELETE FROM category WHERE text = :name")
+    void delete(String name);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Category category);
 
