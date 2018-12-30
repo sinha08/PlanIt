@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import planit.sinha.ankur.com.planit.R;
@@ -26,16 +29,14 @@ import planit.sinha.ankur.com.planit.data.model.db.Category;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private TextView mCategoryName;
-    private TextView mCategoryName1;
     private HomeViewModel model;
+    private List<Category> cList = new ArrayList<>();
+    private CategoryAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        mCategoryName = findViewById(R.id.category_name);
-        mCategoryName1 = findViewById(R.id.category_name1);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -46,12 +47,13 @@ public class HomeActivity extends AppCompatActivity
                 .get(HomeViewModel.class);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        setFabToDelete(false);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int i=0;i<2;i++) {
-                    model.saveCategory(i,i+"_ideas");
-                }
+//                for (int i=0;i<2;i++) {
+//                    model.saveCategory(i,i+"_ideas");
+//                }
                 Toast.makeText(getApplicationContext(),"added category",Toast.LENGTH_SHORT).show();
             }
         });
@@ -66,6 +68,40 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         subscribeToModel(model);
+
+        // set up the RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.category_recycler);
+        recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        adapter = new CategoryAdapter(this, cList);
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void setFabToDelete(boolean set) {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if (set) {
+            fab.setImageResource(R.drawable.ic_delete_black);
+            fab.invalidate();
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getApplicationContext(),"deleting category",Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();//TODO change it as per delete
+                    setFabToDelete(false);
+                }
+            });
+        } else {
+            fab.setImageResource(R.drawable.add);
+            fab.invalidate();
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                for (int i=0;i<2;i++) {
+//                    model.saveCategory(i,i+"_ideas");
+//                }
+                    Toast.makeText(getApplicationContext(),"added category",Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void subscribeToModel(final HomeViewModel model) {
@@ -74,16 +110,14 @@ public class HomeActivity extends AppCompatActivity
         model.getObservableCategory().observe(this, new Observer<Category>() {
             @Override
             public void onChanged(@Nullable Category category) {
-                if (category != null)
-                    mCategoryName.setText(category.getText());
             }
         });
 
         model.getObservableList().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable List<Category> categories) {
-                if(categories != null && !categories.isEmpty())
-                    mCategoryName1.setText(categories.get(1).getText());
+                if (adapter != null)
+                    adapter.invalidateRecyclerView(categories);
             }
         });
     }
@@ -114,7 +148,6 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            model.getListOfCategories();
             return true;
         }
 
@@ -144,5 +177,11 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        model.getListOfCategories();
     }
 }
